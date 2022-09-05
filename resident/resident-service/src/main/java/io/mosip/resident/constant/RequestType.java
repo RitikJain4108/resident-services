@@ -19,39 +19,39 @@ public enum RequestType {
 			List.of()),
 	SHARE_CRED_WITH_PARTNER(TemplateUtil::getAckTemplateVariablesForCredentialShare,
 			List.of(EventStatusSuccess.RECEIVED, EventStatusSuccess.DATA_SHARED_SUCCESSFULLY),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED)),
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"share-cred-with-partner"),
 	DOWNLOAD_PERSONALIZED_CARD(TemplateUtil::getAckTemplateVariablesForDownloadPersonalizedCard,
 			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED)),
+			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"cust-and-down-my-card"),
 	ORDER_PHYSICAL_CARD(TemplateUtil::getAckTemplateVariablesForOrderPhysicalCard,
 			List.of(EventStatusSuccess.CARD_DELIVERED),
 			List.of(EventStatusFailure.FAILED, EventStatusFailure.PAYMENT_FAILED),
 			List.of(EventStatusInProgress.PAYMENT_CONFIRMED, EventStatusInProgress.NEW, EventStatusInProgress.ISSUED,
-					EventStatusInProgress.PRINTING, EventStatusInProgress.IN_TRANSIT)),
+					EventStatusInProgress.PRINTING, EventStatusInProgress.IN_TRANSIT),"order-a-physical-card"),
 	GET_MY_ID(TemplateUtil::getAckTemplateVariablesForGetMyId, List.of(EventStatusSuccess.CARD_DOWNLOADED),
 			List.of(EventStatusFailure.FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED,
-					EventStatusInProgress.OTP_VERIFIED)),
+					EventStatusInProgress.OTP_VERIFIED),"get-my-uin-card"),
 	BOOK_AN_APPOINTMENT(TemplateUtil::getAckTemplateVariablesForBookAnAppointment, List.of(), List.of(), List.of()),
 	UPDATE_MY_UIN(TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			List.of(EventStatusSuccess.PROCESSED, EventStatusSuccess.DATA_UPDATED),
 			List.of(EventStatusFailure.FAILED, EventStatusFailure.REJECTED, EventStatusFailure.REPROCESS_FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.PROCESSING, EventStatusInProgress.PAUSED,
 					EventStatusInProgress.RESUMABLE, EventStatusInProgress.REPROCESS,
-					EventStatusInProgress.PAUSED_FOR_ADDITIONAL_INFO)),
+					EventStatusInProgress.PAUSED_FOR_ADDITIONAL_INFO),"update-demo-data"),
 	GENERATE_VID(TemplateUtil::getAckTemplateVariablesForGenerateVid, List.of(EventStatusSuccess.VID_GENERATED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW)),
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"gen-or-revoke-vid"),
 	REVOKE_VID(TemplateUtil::getAckTemplateVariablesForRevokeVid, List.of(EventStatusSuccess.VID_REVOKED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW)),
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"gen-or-revoke-vid"),
 	VERIFY_PHONE_EMAIL(TemplateUtil::getAckTemplateVariablesForVerifyPhoneEmail,
 			List.of(EventStatusSuccess.EMAIL_VERIFIED, EventStatusSuccess.PHONE_VERIFIED),
 			List.of(EventStatusFailure.FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED,
-					EventStatusInProgress.OTP_VERIFIED)),
+					EventStatusInProgress.OTP_VERIFIED),"verify-my-phone-email"),
 	AUTH_TYPE_LOCK_UNLOCK(TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			List.of(EventStatusSuccess.LOCKED, EventStatusSuccess.UNLOCKED,
 					EventStatusSuccess.AUTHENTICATION_TYPE_LOCKED, EventStatusSuccess.AUTHENTICATION_TYPE_UNLOCKED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW)),
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"lock-unlock-auth"),
 	VID_CARD_DOWNLOAD(TemplateUtil::getAckTemplateVariablesForVidCardDownload,
 			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED));
@@ -60,14 +60,16 @@ public enum RequestType {
 	private List<EventStatusSuccess> successStatusList;
 	private List<EventStatusFailure> failureStatusList;
 	private List<EventStatusInProgress> inProgressStatusList;
+	private String featureName;
 
 	private RequestType(BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction,
 			List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
-			List<EventStatusInProgress> inProgressStatusList) {
+			List<EventStatusInProgress> inProgressStatusList, String featureName) {
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
 		this.successStatusList = Collections.unmodifiableList(successStatusList);
 		this.failureStatusList = Collections.unmodifiableList(failureStatusList);
 		this.inProgressStatusList = Collections.unmodifiableList(inProgressStatusList);
+		this.featureName = featureName;
 	}
 
 	public List<EventStatusSuccess> getSuccessStatusList() {
@@ -81,13 +83,29 @@ public enum RequestType {
 	public List<EventStatusInProgress> getInProgressStatusList() {
 		return inProgressStatusList;
 	}
-
-	public String getEmailTemplateCodeProperty() {
-		return "resident.template.email." + this.name().toLowerCase();
+	
+	public String getFeatureName() {
+		return featureName;
 	}
 
-	public String getSmsTemplateCodeProperty() {
-		return "resident.template.sms." + this.name().toLowerCase();
+	public String getEmailSubjectTemplateCodeProperty(TemplateType templateType) {
+		return "resident.template.email.subject." + templateType.name().toLowerCase() + "." + getFeatureName();
+	}
+	
+	public String getEmailContentTemplateCodeProperty(TemplateType templateType) {
+		return "resident.template.email.content." + templateType.getTempType() + "." + getFeatureName();
+	}
+	
+	public String getSmsTemplateCodeProperty(TemplateType templateType) {
+		return "resident.template.sms." + templateType.name().toLowerCase();
+	}
+
+//	public String getSmsTemplateCodeProperty() {
+//		return "resident.template.sms." + this.name().toLowerCase();
+//	}
+	
+	public String getBellIconTemplateCodeProperty(TemplateType templateType) {
+		return "resident.template.bell-icon." + templateType.name().toLowerCase();
 	}
 
 	public Map<String, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId) {

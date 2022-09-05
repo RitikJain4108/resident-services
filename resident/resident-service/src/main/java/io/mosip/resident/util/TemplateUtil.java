@@ -9,6 +9,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -35,6 +36,9 @@ import java.util.Optional;
 
     @Autowired
     private RequestValidator requestValidator;
+    
+    @Autowired
+	Environment env;
 
     /**
      * Gets the ack template variables for authentication request.
@@ -176,8 +180,27 @@ import java.util.Optional;
      public  Map<String, String> getAckTemplateVariablesForVidCardDownload(String eventId) {
          return Collections.emptyMap();
      }
+     
+     public String getEmailContentTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String emailContentTemplateCodeProperty = requestType.getEmailContentTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(emailContentTemplateCodeProperty);
+     }
+     
+     public String getSmsContentTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String smsTemplateCodeProperty = requestType.getSmsTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(smsTemplateCodeProperty);
+     }
+     
+     public String getBellIconTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String bellIconTemplateCodeProperty = requestType.getBellIconTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(bellIconTemplateCodeProperty);
+     }
 
-     //ToDo: Need to change method implementation
+     private String getTemplateTypeCode(String templateCodeProperty) {
+    	 return env.getProperty(templateCodeProperty);
+	}
+
+	//ToDo: Need to change method implementation
      private String getVidNumber(String eventId) {
          return "vid";
      }
