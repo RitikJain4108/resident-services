@@ -73,6 +73,9 @@ public class Utilitiy {
 
 	@Autowired
 	private Environment env;
+	
+	@Value("${resident.ui.track-service-request-url}")
+	private String trackServiceUrl;
 
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
@@ -317,5 +320,9 @@ public class Utilitiy {
 
 	public static boolean isSecureSession(){
 		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .filter(obj -> !obj.equals(ANONYMOUS_USER)) .isPresent();
+	}
+	
+	public String createTrackServiceRequestLink(String eventId) {
+		return trackServiceUrl + eventId;
 	}
 }

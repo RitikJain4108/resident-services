@@ -11,7 +11,9 @@ import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.*;
@@ -207,30 +209,31 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
 					ResidentCredentialResponseDto.class);
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
+			sendNotificationV2(dto.getIndividualId(), RequestType.valueOf(requestType),
+					TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), additionalAttributes);
 
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
 		}
 		catch (ResidentServiceCheckedException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			sendNotificationV2(dto.getIndividualId(), RequestType.valueOf(requestType),
+					TemplateType.FAILURE, residentTransactionEntity.getEventId(), additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (ApisResourceAccessException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			sendNotificationV2(dto.getIndividualId(), RequestType.valueOf(requestType),
+					TemplateType.FAILURE, residentTransactionEntity.getEventId(), additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (IOException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			sendNotificationV2(dto.getIndividualId(), RequestType.valueOf(requestType),
+					TemplateType.FAILURE, residentTransactionEntity.getEventId(), additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
@@ -549,6 +552,18 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		NotificationRequestDto notificationRequest = new NotificationRequestDto(id, templateTypeCode,
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
+	}
+	
+	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
+			String eventId, Map<String, Object> additionalAttributes) throws ResidentServiceCheckedException {
+
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId(id);
+		notificationRequestDtoV2.setRequestType(requestType);
+		notificationRequestDtoV2.setTemplateType(templateType);
+		notificationRequestDtoV2.setEventId(eventId);
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		return notificationService.sendNotification(notificationRequestDtoV2);
 	}
 	/*
 	 * private PartnerCredentialTypePolicyResponseDto policyMapper(

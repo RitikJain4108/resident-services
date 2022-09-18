@@ -1,19 +1,19 @@
 package io.mosip.resident.constant;
 
 public enum TemplateType {
-	
+
 	REQUEST_RECEIVED("request-received"),
 	SUCCESS("success"),
 	FAILURE("failure");
 
-	private String tempType;
+	private String type;
 
-	TemplateType(String tempType) {
-		this.tempType = tempType;
+	TemplateType(String type) {
+		this.type = type;
 	}
-	
-	public String getTempType() {
-		return tempType;
+
+	public String getType() {
+		return type;
 	}
 
 }
