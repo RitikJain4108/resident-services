@@ -84,7 +84,7 @@ public class DownloadCardController {
 
     @GetMapping("/request-card/vid/{VID}")
     public ResponseWrapper<VidDownloadCardResponseDto> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
-        requestValidator.validateDownloadCardVid(vid);
+//        requestValidator.validateDownloadCardVid(vid);
         ResponseWrapper<VidDownloadCardResponseDto> downloadCardResponseDtoResponseWrapper = downloadCardService.getVidCardEventId(vid);
         return downloadCardResponseDtoResponseWrapper;
     }

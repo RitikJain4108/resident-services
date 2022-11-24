@@ -25,6 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -48,6 +50,8 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
+	
+	Resource resource;
 
 	@Before
 	public void setUp() throws Exception {
@@ -55,7 +59,7 @@ public class ResidentConfigServiceImplTest {
 				.thenReturn(new ByteArrayInputStream("{\"name\":\"identity-mapping\"}".getBytes()));
 		ReflectionTestUtils.setField(configServiceImpl, "resourceLoader", resourceLoader);
 		ReflectionTestUtils.setField(configServiceImpl, "residentUiSchemaJsonFilePrefix", "classpath:resident-ui");
-		Resource resource = Mockito.mock(Resource.class);
+		resource = Mockito.mock(Resource.class);
 		Mockito.when(resourceLoader.getResource(Mockito.anyString())).thenReturn(resource);
 		when(resource.exists()).thenReturn(true);
 		String uiSchema = "{\"name\":\"ui-schema\"}";
@@ -100,25 +104,12 @@ public class ResidentConfigServiceImplTest {
 
 	}
 
-	@Test
-	public void testGetUISchema() throws Exception {
+	@Test(expected = ResidentServiceException.class)
+	public void testGetUISchemaElse() throws Exception {
 		ResidentConfigServiceImpl testSubject;
-
 		testSubject = createTestSubject();
-		String uiSchema = "{\"name\":\"ui-schema\"}";
-		String result = testSubject.getUISchema("update-demographics");
-		assertTrue(result.contains(uiSchema));
-	}
-
-	@Test
-	public void testGetUISchemaTry() throws Exception {
-		ResidentConfigServiceImpl testSubject;
-
-		testSubject = createTestSubject();
-		String uiSchema = null;
-		uiSchema = "{\"name\":\"ui-schema\"}";
-		String result = testSubject.getUISchema("update-demographics");
-		assertTrue(result.contains(uiSchema));
+		when(resource.exists()).thenReturn(false);
+		testSubject.getUISchema("update-demographics");
 	}
 
 	@Test
@@ -185,5 +176,12 @@ public class ResidentConfigServiceImplTest {
 		ReflectionTestUtils.setField(testSubject, "uiSchemaFilteredInputAttributes", uiSchemaFilteredInputAttributes);
 		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
 		assertNotNull(result);
+	}
+	
+	@Test
+	public void testGetSharableAttributesList() throws Exception {
+		ResidentConfigServiceImpl testSubject;
+		testSubject = createTestSubject();
+		List<String> result = testSubject.getSharableAttributesList(null, "update-demographics");
 	}
 }

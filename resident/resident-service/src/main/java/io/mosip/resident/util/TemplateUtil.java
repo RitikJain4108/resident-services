@@ -75,6 +75,7 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
         templateVariables.put(TemplateVariablesConstants.SUMMARY, residentTransactionEntity.getRequestSummary());
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
+        templateVariables.put("trackServiceLink", utilitiy.createTrackServiceRequestLink(eventId));
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {

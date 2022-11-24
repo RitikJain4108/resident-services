@@ -256,6 +256,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         String eventId="";
         try{
+        	insertDataForVidCard(null, vid);
             RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
@@ -298,14 +299,15 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return responseWrapper;
     }
 
-    private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException {
+    private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
         String eventId = UUID.randomUUID().toString();
-        String uin = utilities.getUinByVid(vid);
-        residentTransactionEntity.setEventId(eventId);
-        residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(uin));
-        residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
+//        String uin = utilities.getUinByVid(vid);
+//        residentTransactionEntity.setEventId(eventId);
+//        residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
+//        residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(uin));
+        residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(vid));
+        String idatoken= identityService.getIDAToken(vid);
         residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
         residentTransactionEntity.setStatusCode(NEW);
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
