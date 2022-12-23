@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AidOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -56,10 +55,10 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public OtpResponseDTO reqOtpForAid(@RequestBody AidOtpRequestDTO otpRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
+	public OtpResponseDTO reqOtpForAid(@RequestBody OtpRequestDTO otpRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.OTP_AID_GEN);
-		if(otpRequestDto.getAid() == null) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "aid");
+		if(otpRequestDto.getIndividualId() == null) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "individualId");
 		}
 		OtpResponseDTO otpResponseDTO = residentOtpService.generateOtpForAid(otpRequestDto);
 		audit.setAuditRequestDto(EventEnum.OTP_AID_GEN_SUCCESS);

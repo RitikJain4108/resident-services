@@ -28,7 +28,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.resident.controller.ResidentOtpController;
-import io.mosip.resident.dto.AidOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -141,8 +140,8 @@ public class ResidentOtpControllerTest {
 
 	@Test
 	public void reqOtpForAidTest() throws Exception {
-		AidOtpRequestDTO aidOtpRequestDTO = new AidOtpRequestDTO();
-		aidOtpRequestDTO.setAid("aid");
+		OtpRequestDTO aidOtpRequestDTO = new OtpRequestDTO();
+		aidOtpRequestDTO.setIndividualId("individualId");
 		Mockito.when(residentOtpService.generateOtp(otpRequestDTO)).thenReturn(otpResponseDTO);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(aidOtpRequestDTO);
@@ -154,8 +153,8 @@ public class ResidentOtpControllerTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	@WithUserDetails("resident")
 	public void reqOtpForAidNullTest() throws Exception {
-		AidOtpRequestDTO aidOtpRequestDTO = new AidOtpRequestDTO();
-		aidOtpRequestDTO.setAid(null);
+		OtpRequestDTO aidOtpRequestDTO = new OtpRequestDTO();
+		aidOtpRequestDTO.setIndividualId(null);
 		assertNotNull(residentOtpController.reqOtpForAid(aidOtpRequestDTO));
 	}
 }

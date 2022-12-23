@@ -3,7 +3,6 @@ package io.mosip.resident.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
-import io.mosip.resident.dto.*;
 import io.mosip.resident.util.Utilitiy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,6 +16,8 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.OtpRequestDTO;
+import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -118,11 +119,11 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	}
 
 	@Override
-	public OtpResponseDTO generateOtpForAid(AidOtpRequestDTO otpRequestDto)
+	public OtpResponseDTO generateOtpForAid(OtpRequestDTO otpRequestDto)
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
 		String individualId;
 		try {
-			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getAid());
+			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getIndividualId());
 			otpRequestDto.setIndividualId(individualId);
 			return generateOtp(otpRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
