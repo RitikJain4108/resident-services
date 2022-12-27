@@ -56,6 +56,12 @@ public class DocumentController {
 	
 	@Autowired
 	private AuditUtil audit;
+	
+	@Value("${resident.document.upload.id}")
+	private String residentUploadDocumentId;
+	
+	@Value("${mosip.resident.request.response.version}")
+	private String residentDocumentResponseVersion;
 
 	@Value("${resident.document.get.id}")
 	private String residentGetDocumentId;
@@ -103,6 +109,8 @@ public class DocumentController {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
+			responseWrapper.setId(residentUploadDocumentId);
+			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setResponse(uploadDocumentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_SUCCESS, transactionId));
