@@ -441,7 +441,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PostMapping("/aid/get-individual-id")
+	@PostMapping("/individual-id/status")
 	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),

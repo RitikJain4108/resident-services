@@ -1400,7 +1400,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAidStatusRequestDtoAidNull() throws Exception{
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid(null);
+		aidStatusRequestDTO.setIndividualId(null);
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
@@ -1412,7 +1412,7 @@ public class RequestValidatorTest {
 	@Test
 	public void testValidateAidStatusRequestDtoSuccess() throws Exception{
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid("17");
+		aidStatusRequestDTO.setIndividualId("17");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
